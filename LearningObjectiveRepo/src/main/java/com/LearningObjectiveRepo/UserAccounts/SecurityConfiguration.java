@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 // Modifying or overriding the default spring boot security.
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -29,12 +31,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	// This method is for overriding the default AuthenticationManagerBuilder.
 	// We can specify how the user details are kept in the application. It may
 	// be in a database, LDAP or in memory.
-
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(appUserDetailsService).passwordEncoder(getPasswordEncoder());
+		auth.inMemoryAuthentication()
+	      .withUser("user").password("password").roles("Admin");
 	}
-
+	
 	// this configuration allow the client app to access the this api
 	// all the domain that consume this api must be included in the allowed origins
 
@@ -48,7 +51,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			}
 		};
 	}
-
 	// This method is for overriding some configuration of the WebSecurity
 	// If you want to ignore some request or request patterns then you can
 	// specify that inside this method
@@ -62,37 +64,41 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().and()
-				// starts authorizing configurations
-				.authorizeRequests()
-				// ignoring the guest's urls "
-				.antMatchers("/api/users/register", "/api/users/login", "/api/users/token").permitAll()
-				.antMatchers(HttpMethod.GET, "/api/los").permitAll().anyRequest().authenticated().and()
-				/*
-				 * "/logout" will log the user out by invalidating the HTTP Session, cleaning up
-				 * any {link rememberMe()} authentication that was configured,
-				 */
-				.logout().permitAll()
-				.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED)).and()
-				// enabling the basic authentication
-				.httpBasic().and()
-				// configuring the session on the server
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).and()
-				// disabling the CSRF - Cross Site Request Forgery
-				.csrf().disable();
+		// starts authorizing configurations
+		.authorizeRequests()
+		// ignoring the guest's urls "
+		.antMatchers("/api/users/register","/api/users/login", "/api/users/token").permitAll()
+		.antMatchers(HttpMethod.GET,"/api/los").permitAll()
+		.antMatchers("/api/admin/**").hasRole("Admin")
+		// authenticate all remaining URLS
+		.anyRequest().authenticated().and()
+      /* "/logout" will log the user out by invalidating the HTTP Session,
+       * cleaning up any {link rememberMe()} authentication that was configured, */
+		.logout()
+        .permitAll().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED))
+		//.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).clearAuthentication(true).invalidateHttpSession(true)
+        .and()
+		// enabling the basic authentication
+		.httpBasic().and()
+		// configuring the session on the server
+		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).and()
+		// disabling the CSRF - Cross Site Request Forgery
+		.csrf().disable();
 	}
-
+	
 	private PasswordEncoder getPasswordEncoder() {
-		return new PasswordEncoder() {
-			@Override
-			public String encode(CharSequence charSequence) {
-				return charSequence.toString();
-			}
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence charSequence) {
+                return charSequence.toString();
+            }
 
-			@Override
-			public boolean matches(CharSequence charSequence, String s) {
-				return true;
-			}
-		};
+            @Override
+            public boolean matches(CharSequence charSequence, String s) {
+                return true;
+            }
+        };
+    }
+	
+
 	}
-
-}

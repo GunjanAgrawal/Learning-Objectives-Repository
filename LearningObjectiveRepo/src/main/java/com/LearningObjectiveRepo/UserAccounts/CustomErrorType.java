@@ -1,10 +1,7 @@
-/**
- * 
- */
+
 package com.LearningObjectiveRepo.UserAccounts;
 
 /**
- * @author Jitendra
  * Class for proper error messages
  */
 public class CustomErrorType {

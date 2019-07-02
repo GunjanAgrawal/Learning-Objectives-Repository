@@ -16,7 +16,7 @@ import com.LearningObjectiveRepo.ExceptionHandling.ResourceNotFoundException;
 import com.LearningObjectiveRepo.UserAccounts.Message;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins="*",allowedHeaders="*")
 @RequestMapping(value = "/api/taxonomies")
 public class TaxonomyController {
 
@@ -61,7 +61,8 @@ public class TaxonomyController {
 		Message m = new Message();
 		m.setMessage("Taxonomy submitted successfully");
 		return m;
-	}
+		}
+
 
 	/*
 	 * Get all the taxonomies from database

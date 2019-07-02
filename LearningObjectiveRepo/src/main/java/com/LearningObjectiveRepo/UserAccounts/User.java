@@ -23,41 +23,44 @@ public class User implements UserDetails {
 	 */
 	private static final long serialVersionUID = 1L;
 
-//	public static enum Role{ Creator }
+
+	public static enum Role{ Creator }
 	/**
 	 * Description of the property id.
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
+	private Long id ;
 	/**
 	 * Description of the property email.
 	 */
 	@Column(unique = true)
-	private String username;
+	private String username ;
 	/**
 	 * Description of the property password.
 	 */
 	@JsonProperty(access = Access.WRITE_ONLY)
-	private String password;
+
+	private String password ;
 	/**
 	 * Description of the property role , to grant authority to the user .
 	 */
-	private String role;
-	/**
+    private String  role;
+    /**
 	 * Description of the property full name.
 	 */
-	private String fullName;
+    private String fullName;
 
-	public User() {
-
-	}
-
-	public User(String username, String password, String fullName) {
-		this.username = username;
-		this.password = password;
-		this.fullName = fullName;
-	}
+    public User(){
+    	
+    }
+    
+    public User(String username,String password,String fullName){
+    	this.username=username;
+    	this.password= password;
+    	this.fullName=fullName;
+    }
+	
 
 	@JsonIgnore
 	@Override
@@ -93,20 +96,22 @@ public class User implements UserDetails {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", password=" + password + ", role=" + role + ",]";
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", role=" + role +
+				 ",]";
 	}
 
 	@Override
 	public String getPassword() {
-
+		// TODO Auto-generated method stub
 		return password;
 	}
 
 	@Override
 	public String getUsername() {
-
+		// TODO Auto-generated method stub
 		return username;
 	}
+	
 
 	public String getRole() {
 		return role;
@@ -120,6 +125,8 @@ public class User implements UserDetails {
 		this.username = username;
 	}
 
+	
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -127,7 +134,6 @@ public class User implements UserDetails {
 	public String getFullName() {
 		return fullName;
 	}
-
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
@@ -135,5 +141,4 @@ public class User implements UserDetails {
 	public Long getId() {
 		return id;
 	}
-
 }
