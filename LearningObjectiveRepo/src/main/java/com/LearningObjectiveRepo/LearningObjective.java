@@ -97,7 +97,7 @@ public class LearningObjective {
 	/*
 	 * Getters and Setters
 	 */
-	public Set<Type> getType() {
+	public @JsonIgnore Set<Type> getType() {
 		return type;
 	}
 
@@ -161,7 +161,7 @@ public class LearningObjective {
 		this.lObjective = lObjective;
 	}
 
-	public Set<Category> getCategory() {
+	public @JsonIgnore Set<Category> getCategory() {
 		return category;
 	}
 
